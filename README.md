@@ -1,3 +1,7 @@
-`cargo +nightly run`
+# Kernel
+The kernel.org competitor - definitely better than any other kernel to date.
 
-https://os.phil-opp.com/
+*Partially/Mostly based on [this](https://os.phil-opp.com/)*
+
+## TODO
+- [ ] Volatile

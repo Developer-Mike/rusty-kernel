@@ -14,12 +14,13 @@ pub enum VgaColor {
   LightGreen = 0xA,
   LightCyan = 0xB,
   LightRed = 0xC,
-  Pink = 0xD,
+  LightMagenta = 0xD,
   Yellow = 0xE,
   White = 0xF,
 }
 
 #[derive(Clone, Copy)]
+#[repr(transparent)] // Map to u8
 pub struct CharColor(u8);
 
 impl CharColor {

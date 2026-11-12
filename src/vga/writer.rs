@@ -1,7 +1,7 @@
 use crate::vga::colors;
 use crate::vga::buffer;
 
-const VGA_BUFFER_ADDR: i32 = 0xb8000;
+const VGA_BUFFER_ADDR: usize = 0xb8000;
 
 pub struct Writer {
   buffer: &'static mut buffer::Buffer,
@@ -50,9 +50,13 @@ impl Writer {
     }
   }
 
-  fn newline(&mut self) { // FIXME: This is still WIP
+  fn newline(&mut self) {
     for row in 0..(buffer::BUFFER_HEIGHT - 1) {
       self.buffer.chars[row] = self.buffer.chars[row + 1];
     }
+
+    let blank = buffer::ScreenChar { character: b' ', color: self.color };
+    self.buffer.chars[buffer::BUFFER_HEIGHT - 1] = [blank; buffer::BUFFER_WIDTH];
+    self.column = 0;
   }
 }
