@@ -9,10 +9,8 @@ mod vga;
 entry_point!(kernel_main);
 
 fn kernel_main(_boot_info: &'static BootInfo) -> ! {
-  let mut writer = vga::writer::Writer::new();
-
-  writer.string("Hello world\n");
-  writer.string("Hello world\n");
+  vga::writer::println("Hello world");
+  vga::writer::println("Hello world");
 
   loop {}
 }

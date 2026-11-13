@@ -1,3 +1,5 @@
+use lazy_static::lazy_static;
+use spin::Mutex;
 use crate::vga::colors;
 use crate::vga::buffer;
 
@@ -10,24 +12,15 @@ pub struct Writer {
 }
 
 impl Writer {
-  pub fn new() -> Writer {
-    Writer {
-      column: 0,
-      color: colors::CharColor::new(
-        colors::VgaColor::LightGray,
-        colors::VgaColor::Black
-      ),
-      buffer: unsafe { &mut *(VGA_BUFFER_ADDR as *mut buffer::Buffer) },
-    }
-  }
-
-  pub fn string(&mut self, string: &str) {
+  pub fn string(&mut self, string: &str) -> Result<(), ()> {
     for byte in string.bytes() {
       match byte {
         0x20..=0x7e | b'\n' => self.byte(byte),
         _ => self.byte(0xfe),
       }
     }
+
+    Ok(())
   }
 
   pub fn byte(&mut self, byte: u8) {
@@ -64,4 +57,21 @@ impl Writer {
     }
     self.column = 0;
   }
+}
+
+lazy_static! {
+  pub static ref WRITER: Mutex<Writer> = Mutex::new(Writer {
+    column: 0,
+    color: colors::CharColor::new(
+      colors::VgaColor::LightGray,
+      colors::VgaColor::Black
+    ),
+    buffer: unsafe { &mut *(VGA_BUFFER_ADDR as *mut buffer::Buffer) },
+  });
+}
+
+pub fn println(string: &str) {
+  let mut lock = WRITER.lock();
+  lock.string(string).unwrap();
+  lock.string("\n").unwrap();
 }
