@@ -1,3 +1,4 @@
+use volatile::Volatile;
 use crate::vga::colors;
 
 pub const BUFFER_HEIGHT: usize = 25;
@@ -12,5 +13,6 @@ pub struct ScreenChar {
 
 #[repr(C)] // Ensure it gets placed in order into memory
 pub struct Buffer {
-  pub chars: [[ScreenChar; BUFFER_WIDTH]; BUFFER_HEIGHT],
+  // Mark as volatile to not get optimized away
+  pub chars: [[Volatile<ScreenChar>; BUFFER_WIDTH]; BUFFER_HEIGHT],
 }

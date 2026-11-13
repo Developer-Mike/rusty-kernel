@@ -40,10 +40,10 @@ impl Writer {
 
         let row = buffer::BUFFER_HEIGHT - 1;
         let col = self.column;
-        self.buffer.chars[row][col] = buffer::ScreenChar {
+        self.buffer.chars[row][col].write(buffer::ScreenChar {
           character: byte,
           color: self.color
-        };
+        });
 
         self.column += 1;
       }
@@ -51,12 +51,17 @@ impl Writer {
   }
 
   fn newline(&mut self) {
-    for row in 0..(buffer::BUFFER_HEIGHT - 1) {
-      self.buffer.chars[row] = self.buffer.chars[row + 1];
+    for row in 1..buffer::BUFFER_HEIGHT {
+      for col in 0..buffer::BUFFER_WIDTH {
+        let character = self.buffer.chars[row][col].read();
+        self.buffer.chars[row - 1][col].write(character);
+      }
     }
 
     let blank = buffer::ScreenChar { character: b' ', color: self.color };
-    self.buffer.chars[buffer::BUFFER_HEIGHT - 1] = [blank; buffer::BUFFER_WIDTH];
+    for column in 0..buffer::BUFFER_WIDTH {
+      self.buffer.chars[buffer::BUFFER_HEIGHT - 1][column].write(blank);
+    }
     self.column = 0;
   }
 }
